@@ -21,6 +21,7 @@
 	"imports": {
 		"$/": "./",
 		"@std": "jsr:@std",
+		"zod": "jsr:@zod/zod@^4.1.12",
 		"fresh": "jsr:@fresh/core@^2.1.2",
 		"preact": "npm:preact@^10.27.2",
 		"@preact/signals": "npm:@preact/signals@^2.3.1",
@@ -31,7 +32,8 @@
 		"@tailwindcss/vite": "npm:@tailwindcss/vite@^4.1.12",
 		"boksy": "jsr:@paulaboks/boksy@0.3.1",
 		"pocksy": "jsr:@paulaboks/pocksy@0.1.5",
-		"datetime": "jsr:@paulaboks/datetime@^0.1.6"
+		"datetime": "jsr:@paulaboks/datetime@^0.1.6",
+		"@denorg/scrypt": "jsr:@denorg/scrypt@^4.4.4"
 	},
 	"compilerOptions": {
 		"lib": [
