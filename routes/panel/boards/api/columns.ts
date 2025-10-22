@@ -4,6 +4,8 @@ import { define } from "$/utils.ts";
 import { db } from "$/src/db.ts";
 
 const ColumnData = z.object({
+	id: z.optional(z.string()),
+	data_created: z.optional(z.string()),
 	board_id: z.string(),
 	name: z.optional(z.string()),
 	order: z.number(),
@@ -25,5 +27,25 @@ export const handler = define.handlers({
 		});
 
 		return Response.json(new_column, { status: 201 });
+	},
+	async PUT(ctx) {
+		const r = ColumnData.safeParse(await ctx.req.json());
+		if (!r.success) {
+			return Response.json(
+				{ error: `Dados errados: ${r.error.issues.map((error) => error.message).join(", ")}` },
+				{ status: 400 },
+			);
+		}
+
+		if (!r.data.id) {
+			return Response.json(
+				{ error: `Sem id` },
+				{ status: 400 },
+			);
+		}
+
+		await db.update_entry("board_columns", r.data);
+
+		return Response.json(true, { status: 201 });
 	},
 });

@@ -18,8 +18,10 @@ export default function Board(props: BoardProps) {
 	const columns = useSignal(props.columns);
 	const tasks = useSignal(props.tasks);
 	const dragging_task = useSignal<BoardTasks | undefined>(undefined);
+
 	const new_task_is_open = useSignal(false);
-	const column_id_selected = useSignal("");
+	const column_edit_is_open = useSignal(false);
+	const column_selected = useSignal<BoardColumns | undefined>(undefined);
 
 	return (
 		<>
@@ -54,8 +56,17 @@ export default function Board(props: BoardProps) {
 								}
 							}}
 						>
-							<div class="p-4 border-b border-gray-200">
-								<h2 class="font-semibold text-lg text-gray-700">{column.name}</h2>
+							<div class="p-4 border-b border-gray-200 flex flex-row">
+								<h2 class="font-semibold text-lg text-gray-700 grow">{column.name}</h2>
+								<button
+									type="button"
+									onClick={() => {
+										column_edit_is_open.value = true;
+										column_selected.value = column;
+									}}
+								>
+									⚙️
+								</button>
 							</div>
 							<div class="flex-1 p-4 space-y-4 overflow-y-auto">
 								{tasks.value.filter((task) => task.column_id === column.id).map((task) => (
@@ -83,7 +94,7 @@ export default function Board(props: BoardProps) {
 									class="text-sm text-indigo-600 font-medium"
 									onClick={() => {
 										new_task_is_open.value = true;
-										column_id_selected.value = column.id;
+										column_selected.value = column;
 									}}
 								>
 									+ Nova tarefa
@@ -143,7 +154,7 @@ export default function Board(props: BoardProps) {
 					}}
 				>
 					<input type="hidden" name="board_id" value={board.value.id} />
-					<input type="hidden" name="column_id" value={column_id_selected.value} />
+					<input type="hidden" name="column_id" value={column_selected.value?.id} />
 					<div>
 						<Label>Nome da tarefa</Label>
 						<Input name="name" />
@@ -157,6 +168,40 @@ export default function Board(props: BoardProps) {
 						<Input type="color" name="color" class="p-0 w-10" value="#ffffff" />
 					</div>
 					<Button type="submit">Criar tarefa</Button>
+				</form>
+			</Modal>
+			<Modal is_open={column_edit_is_open}>
+				<form
+					class="p-4 flex flex-col gap-3"
+					onSubmit={async (event) => {
+						event.preventDefault();
+						const formdata = new FormData(event.currentTarget);
+						const data = {
+							order: column_selected.value?.order,
+							...Object.fromEntries(formdata.entries()),
+						};
+						const response = await fetch("/panel/boards/api/columns", {
+							method: "PUT",
+							headers: {
+								"Accept": "application/json",
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify(data),
+						});
+						if (response.ok) {
+							tasks.value = [...tasks.value, await response.json()];
+						}
+						new_task_is_open.value = false;
+					}}
+				>
+					<input type="hidden" name="id" value={column_selected.value?.id} />
+					<input type="hidden" name="board_id" value={board.value.id} />
+					<div>
+						<Label>Nome da coluna</Label>
+						<Input name="name" value={column_selected.value?.name} />
+					</div>
+
+					<Button type="submit">Editar coluna</Button>
 				</form>
 			</Modal>
 		</>
