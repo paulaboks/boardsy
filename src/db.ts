@@ -27,7 +27,10 @@ export type Schema = {
 		board_id: string;
 		user_id: string;
 		column_id: string;
+
 		name: string;
+		description: string;
+		color: string;
 	};
 };
 
