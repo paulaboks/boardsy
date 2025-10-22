@@ -46,7 +46,7 @@ export const handler = define.handlers({
 		const now = Date.now();
 		login(ctx.state.cookies, user.id, now + ONE_YEAR);
 
-		return redirect("/painel");
+		return redirect("/panel");
 	},
 });
 

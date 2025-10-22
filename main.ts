@@ -3,7 +3,7 @@ import { blue, green, red, yellow } from "@std/fmt/colors";
 import { CookieJar, flash, redirect, save_session, Session, start_session, verify_token } from "pocksy";
 
 import { define, type State } from "$/utils.ts";
-import { db } from "$/src/db.ts";
+import { db, User } from "$/src/db.ts";
 
 export const app = new App<State>();
 
@@ -55,7 +55,7 @@ app.use(async (ctx) => {
 				flash(ctx.state.session, "error::Usuario não encontrado");
 				return redirect("/logout");
 			}
-			ctx.state.user = user;
+			ctx.state.user = user as unknown as User;
 		} catch (_e) {
 			// Erase the cookie if it is invalid
 			return redirect("/logout");
